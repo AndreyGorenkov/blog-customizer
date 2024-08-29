@@ -13,22 +13,24 @@ import {
 	defaultArticleState,
 } from 'constants/articleProps';
 import type { ArticleStateType, OptionType } from 'constants/articleProps';
-import { useState, FormEvent, useLayoutEffect } from 'react';
+import { useState, FormEvent, useRef, useEffect } from 'react';
 import clsx from 'clsx';
 import styles from './ArticleParamsForm.module.scss';
 
 type ArticleParamsFormProps = {
 	onApply: (params: ArticleStateType) => void;
-	currentParams: ArticleStateType;
+	// currentParams: ArticleStateType;
 };
 
 export const ArticleParamsForm = ({
 	onApply,
-	currentParams,
-}: ArticleParamsFormProps) => {
+}: // currentParams,
+ArticleParamsFormProps) => {
 	const [isOpenForm, setIsOpenForm] = useState<boolean>(false);
 	const [formValues, setFormValues] =
 		useState<ArticleStateType>(defaultArticleState);
+	const formRef = useRef<HTMLFormElement>(null);
+
 	const toggleForm = () => {
 		setIsOpenForm((prev) => !prev);
 	};
@@ -48,9 +50,19 @@ export const ArticleParamsForm = ({
 
 	const handleReset = () => setFormValues(defaultArticleState);
 
-	useLayoutEffect(() => {
-		if (isOpenForm) setFormValues(currentParams);
-	}, [isOpenForm]);
+	// useLayoutEffect(() => {
+	// 	if (isOpenForm) setFormValues(currentParams);
+	// }, [isOpenForm]);
+
+	useEffect(() => {
+		const handleClickOutside = (event: MouseEvent) => {
+			if (formRef.current && !formRef.current.contains(event.target as Node)) {
+				setIsOpenForm(false);
+			}
+		};
+		document.addEventListener('mousedown', handleClickOutside);
+		return () => document.removeEventListener('mousedown', handleClickOutside);
+	}, []);
 
 	return (
 		<>
@@ -59,7 +71,7 @@ export const ArticleParamsForm = ({
 				className={clsx(styles.container, {
 					[styles.container_open]: isOpenForm,
 				})}>
-				<form className={styles.form} onSubmit={onSumbit}>
+				<form ref={formRef} className={styles.form} onSubmit={onSumbit}>
 					<Text size={31} weight={800}>
 						Задайте параметры
 					</Text>

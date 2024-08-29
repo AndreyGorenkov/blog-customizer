@@ -26,7 +26,7 @@ const App = () => {
 					'--bg-color': params.backgroundColor.value,
 				} as CSSProperties
 			}>
-			<ArticleParamsForm currentParams={params} onApply={setParams} />
+			<ArticleParamsForm /*currentParams={params}*/ onApply={setParams} />
 			<Article />
 		</div>
 	);
